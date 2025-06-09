@@ -1,0 +1,15 @@
+{
+    "Card0": "gustaviaceaselessserenade",
+    "Card1": "vitalizingserenade",
+    "Card2": "annoyingwhistle",
+    "Card3": "poisoneddaggers",
+    "Card4": "hiddenweapons",
+    "Card5": "",
+    "CardSpecial0": "",
+    "CardSpecial1": "",
+    "PackClass": "scout",
+    "PackID": "gustavia",
+    "PackName": "Gustavia",
+    "PerkList": [],
+    "RequiredClass": "serenader"
+}

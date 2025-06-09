@@ -1,0 +1,15 @@
+{
+    "BaseSkin": true,
+    "PerkLevel": 0,
+    "SkinGO": "skingustavia",
+    "SkinID": "serenaderbase",
+    "SkinName": "Default",
+    "SkinOrder": 0,
+    "SkinSubclass": "serenader",
+    "Sku": "",
+    "SpritePortrait": "gustaviaPortrait",
+    "SpritePortraitGrande": "gustaviaPortraitGrande",
+    "SpriteSilueta": "gustaviaSilueta",
+    "SpriteSiluetaGrande": "gustaviaSiluetaGrande",
+    "SteamStat": ""
+}
