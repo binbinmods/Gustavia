@@ -1,10 +1,10 @@
 # Gustavia, the Serenader
 
-A hero mod, introducing Gustavia, a mage/healer who has been trapped in a mental cage. She goes on a journey to break out but has two very different ways of doing so overcoming the issues in a calm and focused way or forcefully breaking out of the cage through sheer will.
-
-This character was designed by @designer.
+A hero mod, introducing Gustavia, a scout who serenades her friends and her foes with dazzling displays of sweet song.
 
 This currently does not include any events or quests related to Gustavia other than those available to all heroes or all heroes of a specific class.
+
+Note, the artwork is temporary and we will be getting better artwork soon.
 
 A couple of notes:
 

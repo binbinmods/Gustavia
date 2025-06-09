@@ -62,34 +62,29 @@ namespace Gustavia
             Hero[] teamHero = MatchManager.Instance.GetTeamHero();
             NPC[] teamNpc = MatchManager.Instance.GetTeamNPC();
 
-            if (!IsLivingHero(_character))
-            {
-                return;
-            }
+
 
             if (_trait == trait0)
             {
-                // Gain 1 evade at combat start 
-                _character.SetAuraTrait(_character, "evade", 1);
+                // Stanza increases Healing and Mind damage by 3/Stanza
+                // Done in GACM                
             }
 
 
             else if (_trait == trait2a)
             {
+                if (!IsLivingHero(_character))
+                {
+                    return;
+                }
                 // trait2a
-                // Evasion +1. 
-                // Evasion on you stacks and increases All Damage by 1 per charge. 
-                // When you play a Defense card, gain 1 Energy and Draw 1. (2 times/turn)
+                // When you play an Attack or Small Weapon, reduce the cost of your highest cost Spell by 1. When you play a Spell, reduce the cost of your highest cost Attack or Small Weapon by 1. (3 times/turn)
                 string traitName = traitData.TraitName;
                 string traitId = _trait;
 
-                if (CanIncrementTraitActivations(traitId) && _castedCard.HasCardType(Enums.CardType.Defense))// && MatchManager.Instance.energyJustWastedByHero > 0)
-                {
-                    LogDebug($"Handling Trait {traitId}: {traitName}");
-                    _character?.ModifyEnergy(1);
-                    DrawCards(1);
-                    IncrementTraitActivations(traitId);
-                }
+                int bonusActivations = _character.HaveTrait(trait4b) ? 1 : 0;
+                DualityCardType(ref _character, ref _castedCard, [Enums.CardType.Small_Weapon, Enums.CardType.Attack], [Enums.CardType.Song], traitId, bonusActivations);
+
             }
 
 
@@ -97,27 +92,71 @@ namespace Gustavia
             else if (_trait == trait2b)
             {
                 // trait2b:
-                // Stealth on heroes increases All Damage by an additional 15% per charge and All Resistances by an additional 5% per charge.",
+                // Salient Stanza increases All Damage. 
+                // When you play Attack or Small without Stanza, gain Stanza. This increases from Stanza I to II to III throughout the turn. When you play a Song, lose Stanza.
+                if (!IsLivingHero(_character))
+                {
+                    return;
+                }
                 string traitName = traitData.TraitName;
                 string traitId = _trait;
-
+                bool hasStanza = _character.HasEffect("stanzai") || _character.HasEffect("stanzaii") || _character.HasEffect("stanzaiii");
+                if (hasStanza && _castedCard.HasCardType(Enums.CardType.Song))
+                {
+                    _character.HealAuraCurse(GetAuraCurseData("stanzai"));
+                    _character.HealAuraCurse(GetAuraCurseData("stanzaii"));
+                    _character.HealAuraCurse(GetAuraCurseData("stanzaiii"));
+                }
+                if (!hasStanza && (_castedCard.HasCardType(Enums.CardType.Small_Weapon) || _castedCard.HasCardType(Enums.CardType.Attack)))
+                {
+                    IncrementTraitActivations(traitId);
+                    int activations = MatchManager.Instance.activatedTraits[traitId];
+                    string stanza;
+                    if (activations == 1)
+                    {
+                        stanza = "stanzai";
+                    }
+                    else if (activations == 2)
+                    {
+                        stanza = "stanzaii";
+                    }
+                    else
+                    {
+                        stanza = "stanzaiii";
+                    }
+                    _character.SetAuraTrait(_character, stanza, 1);
+                    if (_character.HaveTrait(trait4b))
+                    {
+                        GainEnergy(_character, 1);
+                    }
+                }
             }
 
             else if (_trait == trait4a)
             {
                 // trait 4a;
-                // Evasion on you can't be purged unless specified. 
-                // Stealth grants 25% additional damage per charge.",
+                // Salient Stanza applies to All Heroes. Done in GACM
+                // When you apply Regen, apply 2 Bless and Sharp
+                if (_character == null || _target == null || !_target.Alive || !_character.Alive)
+                {
+                    return;
+                }
                 string traitName = traitData.TraitName;
                 string traitId = _trait;
-
-                LogDebug($"Handling Trait {traitId}: {traitName}");
+                if (_auxString.ToLower() == "regeneration")
+                {
+                    LogDebug($"Handling Trait {traitId}: {traitName}");
+                    // Not sure if _target or _character who is the source
+                    _target.SetAuraTrait(_character, "bless", 2);
+                    _target.SetAuraTrait(_character, "sharp", 2);
+                }
             }
 
             else if (_trait == trait4b)
             {
                 // trait 4b:
-                // Heroes Only lose 75% stealth charges rounding down when acting in stealth.
+                // Serenading Solo can be activated an additional time. - DONE
+                // When you gain Stanza from Skittish Psalm, gain 1 Energy.
                 string traitName = traitData.TraitName;
                 string traitId = _trait;
                 LogDebug($"Handling Trait {traitId}: {traitName}");
@@ -156,139 +195,55 @@ namespace Gustavia
 
             Character characterOfInterest = _type == "set" ? _characterTarget : _characterCaster;
             string traitOfInterest;
+            AppliesTo appliesTo;
             switch (_acId)
             {
-                // trait2a:
-                // Evasion on you stacks and increases All Damage by 1 per charge. 
+                // trait0:
+                // Stanza increases Healing and Mind damage by 3/Stanza
 
                 // trait2b:
-                // Stealth on heroes increases All Damage by an additional 15% per charge and All Resistances by an additional 5% per charge.",
+                // Stanza increases Healing and ALL damage by 3/Stanza
 
-                // trait 4a;
-                // Evasion on you can't be purged unless specified. 
-                // Stealth grants 25% additional damage per charge.",
+                // trait 4a:
+                // Stanza increases Healing and Mind damage by 3/Stanza for all heroes
 
-                // trait 4b:
-                // Heroes Only lose 75% stealth charges rounding down when acting in stealth.
-
-                case "evasion":
-                    traitOfInterest = trait2a;
-                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
+                case "stanzai":
+                    traitOfInterest = trait0;
+                    appliesTo = characterOfInterest.HaveTrait(trait4a) ? AppliesTo.Heroes : AppliesTo.ThisHero;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, appliesTo))
                     {
-                        __result.GainCharges = true;
-                        __result.AuraDamageType = Enums.DamageType.All;
-                        float multiplierAmount = 1.0f;  //characterOfInterest.HaveTrait(trait4a) ? 0.3f : 0.2f;
-                        __result.AuraDamageIncreasedPerStack = multiplierAmount;
-                        // __result.HealDoneTotal = Mathf.RoundToInt(multiplierAmount * characterOfInterest.GetAuraCharges("shield"));
-                    }
-                    traitOfInterest = trait4a;
-                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
-                    {
-                        __result.Removable = false;
+                        Enums.DamageType damageTypeIncreased = IfCharacterHas(characterOfInterest, CharacterHas.Trait, trait2b, appliesTo) ? Enums.DamageType.All : Enums.DamageType.Mind;
+                        __result.AuraDamageType = damageTypeIncreased;
+                        __result.AuraDamageIncreasedTotal = 3;
+                        __result.HealDoneTotal = 3;
                     }
                     break;
-                case "stealth":
-                    traitOfInterest = trait2b;
-                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Heroes))
+                case "stanzaii":
+                    traitOfInterest = trait0;
+                    appliesTo = characterOfInterest.HaveTrait(trait4b) ? AppliesTo.Heroes : AppliesTo.ThisHero;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, appliesTo))
                     {
-                        __result.ResistModified = Enums.DamageType.All;
-                        __result.ResistModifiedPercentagePerStack += 5;
-                        __result.AuraDamageType = Enums.DamageType.All;
-                        __result.AuraDamageIncreasedPercentPerStack += 15;
+                        Enums.DamageType damageTypeIncreased = IfCharacterHas(characterOfInterest, CharacterHas.Trait, trait2b, appliesTo) ? Enums.DamageType.All : Enums.DamageType.Mind;
+                        __result.AuraDamageType = damageTypeIncreased;
+                        __result.AuraDamageIncreasedTotal = 6;
+                        __result.HealDoneTotal = 6;
+                    }
+                    break;
+                case "stanzaiii":
+                    traitOfInterest = trait0;
+                    appliesTo = characterOfInterest.HaveTrait(trait4b) ? AppliesTo.Heroes : AppliesTo.ThisHero;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, appliesTo))
+                    {
+                        Enums.DamageType damageTypeIncreased = IfCharacterHas(characterOfInterest, CharacterHas.Trait, trait2b, appliesTo) ? Enums.DamageType.All : Enums.DamageType.Mind;
+                        __result.AuraDamageType = damageTypeIncreased;
+                        __result.AuraDamageIncreasedTotal = 9;
+                        __result.HealDoneTotal = 9;
                     }
                     break;
             }
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(Character), "HealAuraCurse")]
-        public static void HealAuraCursePrefix(ref Character __instance, AuraCurseData AC, ref int __state)
-        {
-            LogInfo($"HealAuraCursePrefix {subclassName}");
-            string traitOfInterest = trait4b;
-            if (IsLivingHero(__instance) && __instance.HaveTrait(traitOfInterest) && AC == GetAuraCurseData("stealth"))
-            {
-                __state = Mathf.FloorToInt(__instance.GetAuraCharges("stealth") * 0.25f);
-                // __instance.SetAuraTrait(null, "stealth", 1);
 
-            }
-
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(Character), "HealAuraCurse")]
-        public static void HealAuraCursePostfix(ref Character __instance, AuraCurseData AC, int __state)
-        {
-            LogInfo($"HealAuraCursePrefix {subclassName}");
-            string traitOfInterest = trait4b;
-            if (IsLivingHero(__instance) && __instance.HaveTrait(traitOfInterest) && AC == GetAuraCurseData("stealth") && __state > 0)
-            {
-                // __state = __instance.GetAuraCharges("stealth");
-                __instance.SetAuraTrait(null, "stealth", __state);
-            }
-
-        }
-
-
-
-
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(CharacterItem), nameof(CharacterItem.CalculateDamagePrePostForThisCharacter))]
-        public static void CalculateDamagePrePostForThisCharacterPrefix()
-        {
-            isDamagePreviewActive = true;
-        }
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(CharacterItem), nameof(CharacterItem.CalculateDamagePrePostForThisCharacter))]
-        public static void CalculateDamagePrePostForThisCharacterPostfix()
-        {
-            isDamagePreviewActive = false;
-        }
-
-
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(MatchManager), nameof(MatchManager.SetDamagePreview))]
-        public static void SetDamagePreviewPrefix()
-        {
-            isDamagePreviewActive = true;
-        }
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(MatchManager), nameof(MatchManager.SetDamagePreview))]
-        public static void SetDamagePreviewPostfix()
-        {
-            isDamagePreviewActive = false;
-        }
-
-
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(CardData), nameof(CardData.SetDescriptionNew))]
-        public static void SetDescriptionNewPostfix(ref CardData __instance, bool forceDescription = false, Character character = null, bool includeInSearch = true)
-        {
-            // LogInfo("executing SetDescriptionNewPostfix");
-            if (__instance == null)
-            {
-                LogDebug("Null Card");
-                return;
-            }
-            if (!Globals.Instance.CardsDescriptionNormalized.ContainsKey(__instance.Id))
-            {
-                LogError($"missing card Id {__instance.Id}");
-                return;
-            }
-
-
-            if (__instance.CardName == "Mind Maze")
-            {
-                StringBuilder stringBuilder1 = new StringBuilder();
-                LogDebug($"Current description for {__instance.Id}: {stringBuilder1}");
-                string currentDescription = Globals.Instance.CardsDescriptionNormalized[__instance.Id];
-                stringBuilder1.Append(currentDescription);
-                // stringBuilder1.Replace($"When you apply", $"When you play a Mind Spell\n or apply");
-                stringBuilder1.Replace($"Lasts one turn", $"Lasts two turns");
-                BinbinNormalizeDescription(ref __instance, stringBuilder1);
-            }
-        }
 
     }
 }

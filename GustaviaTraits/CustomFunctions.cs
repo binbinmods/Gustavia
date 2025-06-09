@@ -349,6 +349,83 @@ namespace Gustavia
         }
 
         /// <summary>
+        /// A Duality trait. Includes everything needed for the duality, no need to do anything else.
+        /// </summary>
+        /// <param name="_character">Character casting the card</param>
+        /// <param name="_castedCard">Card that was class</param>
+        /// <param name="class1">Card Class that could be reduced</param>
+        /// <param name="class2">Card Class that could be reduced</param>
+        /// <param name="traitId">Trait this is attributable to</param>
+        public static void DualityCardType(ref Character _character, ref CardData _castedCard, Enums.CardType[] cardTypes1, Enums.CardType[] cardTypes2, string traitId, int bonusActivations = 0)
+        {
+            if (!((Object)MatchManager.Instance != (Object)null) || !((Object)_castedCard != (Object)null))
+                return;
+            TraitData traitData = Globals.Instance.GetTraitData(traitId);
+            if (MatchManager.Instance.activatedTraits != null && MatchManager.Instance.activatedTraits.ContainsKey(traitId) && MatchManager.Instance.activatedTraits[traitId] > (traitData.TimesPerTurn - 1 + bonusActivations))
+                return;
+            for (int index1 = 0; index1 < 2; ++index1)
+            {
+                Enums.CardType[] types1;
+                Enums.CardType[] types2;
+                if (index1 == 0)
+                {
+                    types1 = cardTypes1;
+                    types2 = cardTypes2;
+                }
+                else
+                {
+                    types1 = cardTypes2;
+                    types2 = cardTypes1;
+                }
+                CardData castedCard = _castedCard;
+                bool hasProperCardTypeToTrigger = types1.Any(castedCard.HasCardType);
+                if (hasProperCardTypeToTrigger)
+                {
+                    if (MatchManager.Instance.CountHeroHand() == 0 || !((Object)_character.HeroData != (Object)null))
+                        break;
+                    List<CardData> cardDataList = new List<CardData>();
+                    List<string> heroHand = MatchManager.Instance.GetHeroHand(_character.HeroIndex);
+                    int num1 = 0;
+                    for (int index2 = 0; index2 < heroHand.Count; ++index2)
+                    {
+                        CardData cardData = MatchManager.Instance.GetCardData(heroHand[index2]);
+                        bool hasProperCardTypeToReduce = types1.Any(cardData.HasCardType);
+                        if ((Object)cardData != (Object)null && hasProperCardTypeToReduce && _character.GetCardFinalCost(cardData) > num1)
+                            num1 = _character.GetCardFinalCost(cardData);
+                    }
+                    if (num1 <= 0)
+                        break;
+                    for (int index3 = 0; index3 < heroHand.Count; ++index3)
+                    {
+                        CardData cardData = MatchManager.Instance.GetCardData(heroHand[index3]);
+                        bool hasProperCardTypeToReduce = types1.Any(cardData.HasCardType);
+
+                        if ((Object)cardData != (Object)null && hasProperCardTypeToReduce && _character.GetCardFinalCost(cardData) >= num1)
+                            cardDataList.Add(cardData);
+                    }
+                    if (cardDataList.Count <= 0)
+                        break;
+                    CardData cardData1 = cardDataList.Count != 1 ? cardDataList[MatchManager.Instance.GetRandomIntRange(0, cardDataList.Count, "trait")] : cardDataList[0];
+                    if (!((Object)cardData1 != (Object)null))
+                        break;
+                    if (!MatchManager.Instance.activatedTraits.ContainsKey(traitId))
+                        MatchManager.Instance.activatedTraits.Add(traitId, 1);
+                    else
+                        ++MatchManager.Instance.activatedTraits[traitId];
+                    MatchManager.Instance.SetTraitInfoText();
+                    int num2 = 1;
+                    cardData1.EnergyReductionTemporal += num2;
+                    MatchManager.Instance.GetCardFromTableByIndex(cardData1.InternalId).ShowEnergyModification(-num2);
+                    MatchManager.Instance.UpdateHandCards();
+                    _character.HeroItem.ScrollCombatText(Texts.Instance.GetText("traits_" + traitData.TraitName) + TextChargesLeft(MatchManager.Instance.activatedTraits[traitId], traitData.TimesPerTurn + bonusActivations), Enums.CombatScrollEffectType.Trait);
+
+                    MatchManager.Instance.CreateLogCardModification(cardData1.InternalId, MatchManager.Instance.GetHero(_character.HeroIndex));
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
         /// For the rest of combat, reduces the cost of a card type when you play a different card type.
         /// </summary>
         /// <param name="_character">Character casting the card</param>

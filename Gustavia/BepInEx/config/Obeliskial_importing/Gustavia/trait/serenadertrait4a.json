@@ -23,7 +23,7 @@
     "DamageBonusPercentValue": 0.0,
     "DamageBonusPercentValue2": 0.0,
     "DamageBonusPercentValue3": 0.0,
-    "Description": "Salient Stanza applies to All Heroes. When you apply Regen, apply that much Bless and Sharp",
+    "Description": "Salient Stanza applies to All Heroes. When you apply Regen, apply 2 Bless and Sharp",
     "HealFlatBonus": 0,
     "HealPercentBonus": 0.0,
     "HealReceivedFlatBonus": 0,
