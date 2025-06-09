@@ -1,0 +1,10 @@
+{
+  "name": "Gustavia_The_Serenader",
+  "version_number": "0.1.3",
+  "website_url": "https://github.com/binbinmods/Gustavia",
+  "description": "New Hero Mod for Gustavia, the Serenader. A new hero that specializes in x, y, and z",
+  "dependencies": [
+    "meds-Obeliskial_Content-1.5.0",
+    "meds-Obeliskial_Essentials-1.4.6"
+  ]
+}
