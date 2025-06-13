@@ -52,7 +52,7 @@ namespace Gustavia
                 _type: ["content", "hero", "trait"]
             );
             // apply patches            
-
+            // GameManager.Instance?.SetDeveloperMode(true);
             harmony.PatchAll();
         }
 

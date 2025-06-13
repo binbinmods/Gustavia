@@ -83,31 +83,57 @@ namespace Gustavia
                 string traitId = _trait;
 
                 int bonusActivations = _character.HaveTrait(trait4b) ? 1 : 0;
-                DualityCardType(ref _character, ref _castedCard, [Enums.CardType.Small_Weapon, Enums.CardType.Attack], [Enums.CardType.Song], traitId, bonusActivations);
+                DualityCardType(ref _character, ref _castedCard, [Enums.CardType.Small_Weapon, Enums.CardType.Attack], [Enums.CardType.Spell], traitId, bonusActivations);
 
             }
 
 
 
+
             else if (_trait == trait2b)
             {
+
                 // trait2b:
                 // Salient Stanza increases All Damage. 
                 // When you play Attack or Small without Stanza, gain Stanza. This increases from Stanza I to II to III throughout the turn. When you play a Song, lose Stanza.
-                if (!IsLivingHero(_character))
+                if (!IsLivingHero(_character) || _castedCard == null)
                 {
+                    LogDebug("Nonliving character or null card");
                     return;
                 }
-                string traitName = traitData.TraitName;
-                string traitId = _trait;
+                // string traitName = traitData.TraitName;
+                string traitId = trait2b;
+
+                LogDebug($"Handling Trait {trait2b}");
+
                 bool hasStanza = _character.HasEffect("stanzai") || _character.HasEffect("stanzaii") || _character.HasEffect("stanzaiii");
+                LogDebug($"Has Stanza {hasStanza} - card - {_castedCard.CardName}");
                 if (hasStanza && _castedCard.HasCardType(Enums.CardType.Song))
                 {
-                    _character.HealAuraCurse(GetAuraCurseData("stanzai"));
-                    _character.HealAuraCurse(GetAuraCurseData("stanzaii"));
-                    _character.HealAuraCurse(GetAuraCurseData("stanzaiii"));
+                    _castedCard.EffectRequired = "";
+                    // Traverse.Create(__instance).Field("castedCard").SetValue(_castedCard);
+                    // _character.SetAuraTrait(_character, "stanzaiii", 1);
+                    // _character.SetAuraTrait(_character, "spellsword", 4);
+
+                    for (int index = _character.AuraList.Count - 1; index >= 0; --index)
+                    {
+                        if (_character.AuraList[index] != null && (UnityEngine.Object)_character.AuraList[index].ACData != (UnityEngine.Object)null && (_character.AuraList[index].ACData.Id == "stanzai" || _character.AuraList[index].ACData.Id == "stanzaii" || _character.AuraList[index].ACData.Id == "stanzaiii"))
+                        {
+                            StringBuilder stringBuilder = new StringBuilder();
+                            stringBuilder.Append("<s>");
+                            stringBuilder.Append(Functions.UppercaseFirst(_character.AuraList[index].ACData.ACName));
+                            stringBuilder.Append("</s>");
+                            string text = stringBuilder.ToString();
+                            Enums.CombatScrollEffectType type = !_character.AuraList[index].ACData.IsAura ? Enums.CombatScrollEffectType.Curse : Enums.CombatScrollEffectType.Aura;
+                            if ((UnityEngine.Object)_character.HeroItem != (UnityEngine.Object)null)
+                                _character.HeroItem.ScrollCombatText(text, type);
+                            _character.AuraList.RemoveAt(index);
+                        }
+                    }
+
+                    // LogDebug($"Testin1234 - Healed Stanza ");
                 }
-                if (!hasStanza && (_castedCard.HasCardType(Enums.CardType.Small_Weapon) || _castedCard.HasCardType(Enums.CardType.Attack)))
+                else if (!hasStanza && (_castedCard.HasCardType(Enums.CardType.Small_Weapon) || _castedCard.HasCardType(Enums.CardType.Attack)))
                 {
                     IncrementTraitActivations(traitId);
                     int activations = MatchManager.Instance.activatedTraits[traitId];
@@ -155,7 +181,7 @@ namespace Gustavia
             else if (_trait == trait4b)
             {
                 // trait 4b:
-                // Serenading Solo can be activated an additional time. - DONE
+                // Secret Solo can be activated an additional time. - DONE
                 // When you gain Stanza from Skittish Psalm, gain 1 Energy.
                 string traitName = traitData.TraitName;
                 string traitId = _trait;
@@ -184,6 +210,25 @@ namespace Gustavia
             return true;
         }
 
+        // [HarmonyPostfix]
+        // [HarmonyPatch(typeof(MatchManager), "CastCard")]
+        // // [HarmonyPriority(Priority.Last)]
+        // public static void CastCardPostfix(ref MatchManager __instance,
+        //     CardItem theCardItem = null,
+        //     bool _automatic = false,
+        //     CardData _card = null,
+        //     int _energy = -1,
+        //     int _posInTable = -1,
+        //     bool _propagate = true)
+        // {
+        //     Character _character = __instance.GetHeroHeroActive();
+        //     CardData _castedCard = _card;
+        //     _castedCard =theCardItem.GetCardData();
+
+
+
+        // }
+
 
 
         [HarmonyPostfix]
@@ -209,6 +254,8 @@ namespace Gustavia
 
                 case "stanzai":
                     traitOfInterest = trait0;
+                    // __result.Removable = true;
+                    // __result.GainAuraCurseConsumption = null;
                     appliesTo = characterOfInterest.HaveTrait(trait4a) ? AppliesTo.Heroes : AppliesTo.ThisHero;
                     if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, appliesTo))
                     {

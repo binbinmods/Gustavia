@@ -7,7 +7,7 @@
         "{\n    \"UnitsInDeck\": 4,\n    \"Card\": \"shiv\"\n}",
         "{\n    \"UnitsInDeck\": 2,\n    \"Card\": \"sawtoothknife\"\n}",
         "{\n    \"UnitsInDeck\": 1,\n    \"Card\": \"poisoneddaggers\"\n}",
-        "{\n    \"UnitsInDeck\": 1,\n    \"Card\": \"hiddenweapons\"\n}",
+        "{\n    \"UnitsInDeck\": 1,\n    \"Card\": \"hiddenweapon\"\n}",
         "{\n    \"UnitsInDeck\": 1,\n    \"Card\": \"gustaviaceaselessserenade\"\n}"
     ],
     "ChallengePack0": "bard",
@@ -73,7 +73,7 @@
         "shiv",
         "sawtoothknife",
         "poisoneddaggers",
-        "hiddenweapons",
+        "hiddenweapon",
         "sawblade",
         "poisondart",
         "sweetmelody",

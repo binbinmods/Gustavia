@@ -1,7 +1,7 @@
 {
     "NewGameObjectID": "skingustavia",
     "BaseGameObjectID": "gustavSkinMedium",
-    "SpriteToUse": "",
+    "SpriteToUse": "gustaviaSkin",
     "ScaleX": 1,
     "ScaleY": 1,
     "Flip": false

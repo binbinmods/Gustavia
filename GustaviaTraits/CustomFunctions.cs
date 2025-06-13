@@ -1,12 +1,7 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Obeliskial_Content;
-using Obeliskial_Essentials;
-using System.IO;
 using static UnityEngine.Mathf;
-using UnityEngine.TextCore.LowLevel;
 using static Gustavia.Plugin;
 using System.Collections.ObjectModel;
 
@@ -378,7 +373,9 @@ namespace Gustavia
                     types2 = cardTypes1;
                 }
                 CardData castedCard = _castedCard;
+                // if (_castedCard.CardClass == cardClass1)
                 bool hasProperCardTypeToTrigger = types1.Any(castedCard.HasCardType);
+                // bool hasCardType2 = types2.Any(castedCard.HasCardType);
                 if (hasProperCardTypeToTrigger)
                 {
                     if (MatchManager.Instance.CountHeroHand() == 0 || !((Object)_character.HeroData != (Object)null))
@@ -389,7 +386,7 @@ namespace Gustavia
                     for (int index2 = 0; index2 < heroHand.Count; ++index2)
                     {
                         CardData cardData = MatchManager.Instance.GetCardData(heroHand[index2]);
-                        bool hasProperCardTypeToReduce = types1.Any(cardData.HasCardType);
+                        bool hasProperCardTypeToReduce = types2.Any(cardData.HasCardType);
                         if ((Object)cardData != (Object)null && hasProperCardTypeToReduce && _character.GetCardFinalCost(cardData) > num1)
                             num1 = _character.GetCardFinalCost(cardData);
                     }
@@ -398,7 +395,7 @@ namespace Gustavia
                     for (int index3 = 0; index3 < heroHand.Count; ++index3)
                     {
                         CardData cardData = MatchManager.Instance.GetCardData(heroHand[index3]);
-                        bool hasProperCardTypeToReduce = types1.Any(cardData.HasCardType);
+                        bool hasProperCardTypeToReduce = types2.Any(cardData.HasCardType);
 
                         if ((Object)cardData != (Object)null && hasProperCardTypeToReduce && _character.GetCardFinalCost(cardData) >= num1)
                             cardDataList.Add(cardData);
