@@ -1,3 +1,7 @@
+# 0.1.3
+
+Added Kaby skin
+
 # 0.1.2
 
 Fixed a bug with Ceaseless Serenade adding multiple copies. This might break a couple other cards (unsure, it shouldn't but it might). Apologies if it does. Just let me know
