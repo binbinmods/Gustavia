@@ -210,24 +210,108 @@ namespace Gustavia
             return true;
         }
 
-        // [HarmonyPostfix]
-        // [HarmonyPatch(typeof(MatchManager), "CastCard")]
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(MatchManager), "CastCard")]
         // // [HarmonyPriority(Priority.Last)]
-        // public static void CastCardPostfix(ref MatchManager __instance,
-        //     CardItem theCardItem = null,
-        //     bool _automatic = false,
-        //     CardData _card = null,
-        //     int _energy = -1,
-        //     int _posInTable = -1,
-        //     bool _propagate = true)
-        // {
-        //     Character _character = __instance.GetHeroHeroActive();
-        //     CardData _castedCard = _card;
-        //     _castedCard =theCardItem.GetCardData();
+        public static void CastCardPrefix(ref MatchManager __instance,
+            ref CardItem theCardItem,
+            ref CardData _card,
+            ref CardData __state,
+            bool _automatic = false,
+            int _energy = -1,
+            int _posInTable = -1,
+            bool _propagate = true)
+        {
+            bool useCardItem = false;
+
+            if (theCardItem != null)
+            {
+                useCardItem = true;
+            }
+            CardData _cardActive = !((UnityEngine.Object)theCardItem != (UnityEngine.Object)null) ? _card : theCardItem.CardData;
+            // _castedCard = theCardItem.GetCardData();
+            if (_cardActive == null)
+            {
+                LogDebug("CastCardPrefix - null card");
+                return;
+            }
+            if (_cardActive.TargetType == Enums.CardTargetType.Global && _cardActive.AddCardPlace == Enums.CardPlace.Hand || _cardActive.Id.StartsWith("gustaviaceaseless"))
+            {
+                LogDebug($"CastCardPrefix - Altering {_cardActive.Id}");
+                __state = _cardActive;
+                _cardActive.AddCard = 0;
+            }
+            else
+            {
+                __state = null;
+            }
+            if (useCardItem)
+            {
+                theCardItem.CardData = _cardActive;
+            }
+            else
+            {
+                _card = _cardActive;
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(MatchManager), "CastCard")]
+        // // [HarmonyPriority(Priority.Last)]
+        public static void CastCardPostfix(ref MatchManager __instance,
+            ref List<string>[] ___HeroDeck,
+            ref Dictionary<string, LogEntry> ___logDictionary,
+            int ___cardsWaitingForReset,
+            CardData __state,
+            ref CardItem theCardItem,
+            ref CardData _card,
+            bool _automatic = false,
+            int _energy = -1,
+            int _posInTable = -1,
+            bool _propagate = true)
+        {
+            bool useCardItem = false;
+
+            if (theCardItem != null)
+            {
+                useCardItem = true;
+            }
+            CardData _cardActive = !((UnityEngine.Object)theCardItem != (UnityEngine.Object)null) ? _card : theCardItem.CardData;
+            // _castedCard = theCardItem.GetCardData();
+            if (_cardActive == null)
+            {
+                LogDebug("CastCardPostfix - null card");
+                return;
+            }
+            if (__state != null)
+            {
+                LogDebug($"CastCardPostfix - adding card to hand - Addcard {__state.AddCard}, addcardid = {_cardActive.AddCardId}");
+                List<string> stringList = [];
+                stringList.Add(_cardActive.AddCardId);
+                for (int index = stringList.Count - 1; index >= 0; --index)
+                    ___HeroDeck[__instance.GetHeroActive()].Insert(0, stringList[index]);
+                for (int index = 0; index < stringList.Count; ++index)
+                {
+                    if (index < 10 - __instance.CountHeroHand())
+                        __instance.CreateLogEntry(true, "toHand:" + ___logDictionary.Count.ToString(), stringList[index], __instance.GetTeamHero()[__instance.GetHeroActive()], (NPC)null, (Hero)null, (NPC)null, __instance.GetCurrentRound());
+                }
+                // __instance.NewCard(__state.AddCard, _cardActive.AddCardFrom);
+                __instance.GenerateNewCard(1, _cardActive.AddCardId, true, Enums.CardPlace.Hand, _cardActive, heroIndex: __instance.GetHeroActive());
+                // while (___cardsWaitingForReset > 0)
+                //     Globals.Instance.WaitForSeconds(0.1f);
+                if (useCardItem)
+                {
+                    theCardItem.CardData = __state;
+                }
+                else
+                {
+                    _card = __state;
+                }
+            }
 
 
 
-        // }
+        }
 
 
 

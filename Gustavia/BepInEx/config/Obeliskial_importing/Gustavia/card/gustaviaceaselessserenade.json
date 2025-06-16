@@ -151,7 +151,7 @@
     "AddCardChoose": 0,
     "AddCardReducedCost": 0,
     "AddCardCostTurn": false,
-    "AddCardFrom": "Deck",
+    "AddCardFrom": "Game",
     "AddCardId": "gustaviaceaselessserenade",
     "AddCardList": [],
     "AddCardPlace": "Hand",
