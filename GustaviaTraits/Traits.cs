@@ -235,7 +235,8 @@ namespace Gustavia
                 LogDebug("CastCardPrefix - null card");
                 return;
             }
-            if (_cardActive.TargetType == Enums.CardTargetType.Global && _cardActive.AddCardPlace == Enums.CardPlace.Hand || _cardActive.Id.StartsWith("gustaviaceaseless"))
+            // if (_cardActive.TargetType == Enums.CardTargetType.Global && _cardActive.AddCardPlace == Enums.CardPlace.Hand || ))
+            if (_cardActive.Id.StartsWith("gustaviaceaseless"))
             {
                 LogDebug($"CastCardPrefix - Altering {_cardActive.Id}");
                 __state = _cardActive;

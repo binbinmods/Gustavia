@@ -1,3 +1,7 @@
+# 0.1.4
+
+Fixed bug with certain cards cast by enemies.
+
 # 0.1.3
 
 Added Kaby skin
