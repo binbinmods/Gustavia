@@ -1,3 +1,7 @@
+# 0.1.5
+
+Ceaseless Serenade no longer shuffles a copy into your deck.
+
 # 0.1.4
 
 Fixed bug with certain cards cast by enemies.

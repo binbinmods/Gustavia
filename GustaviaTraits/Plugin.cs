@@ -2,7 +2,7 @@
 using BepInEx.Logging;
 using HarmonyLib;
 using static Obeliskial_Essentials.Essentials;
-using Obeliskial_Essentials;
+using static Obeliskial_Essentials.CardDescriptionNew;
 using System.IO;
 using UnityEngine;
 using System;
@@ -53,6 +53,9 @@ namespace Gustavia
             );
             // apply patches            
             // GameManager.Instance?.SetDeveloperMode(true);
+            // string card = "gustaviaceaselessserenade";
+            // string text = "Put <nobr><size=+.1>1</size> <space=.2><size=+.1><sprite name=card></size><space=-.2></nobr> <color=#5E3016>Ceaseless Serenade</color> into your hand";
+            // AddTextToCardDescription(text, TextLocation.Beginning, card, includeAB: true);
             harmony.PatchAll();
         }
 

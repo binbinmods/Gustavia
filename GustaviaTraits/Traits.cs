@@ -286,11 +286,13 @@ namespace Gustavia
             }
             if (__state != null)
             {
+
+                // LogDebug($"CastCardPostfix - CardDescription {_cardActive.DescriptionNormalized}");
                 LogDebug($"CastCardPostfix - adding card to hand - Addcard {__state.AddCard}, addcardid = {_cardActive.AddCardId}");
                 List<string> stringList = [];
                 stringList.Add(_cardActive.AddCardId);
-                for (int index = stringList.Count - 1; index >= 0; --index)
-                    ___HeroDeck[__instance.GetHeroActive()].Insert(0, stringList[index]);
+                // for (int index = stringList.Count - 1; index >= 0; --index)
+                //     ___HeroDeck[__instance.GetHeroActive()].Insert(0, stringList[index]);
                 for (int index = 0; index < stringList.Count; ++index)
                 {
                     if (index < 10 - __instance.CountHeroHand())
@@ -298,8 +300,8 @@ namespace Gustavia
                 }
                 // __instance.NewCard(__state.AddCard, _cardActive.AddCardFrom);
                 __instance.GenerateNewCard(1, _cardActive.AddCardId, true, Enums.CardPlace.Hand, _cardActive, heroIndex: __instance.GetHeroActive());
-                // while (___cardsWaitingForReset > 0)
-                //     Globals.Instance.WaitForSeconds(0.1f);
+                while (___cardsWaitingForReset > 0)
+                    Globals.Instance.WaitForSeconds(0.1f);
                 if (useCardItem)
                 {
                     theCardItem.CardData = __state;
