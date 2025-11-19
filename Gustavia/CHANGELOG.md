@@ -1,3 +1,11 @@
+# 0.2.0
+
+Updated for AtO v1.6.22
+
+# 0.1.6
+
+Melodic Guitar no longer vanishes
+
 # 0.1.5
 
 Ceaseless Serenade no longer shuffles a copy into your deck.
