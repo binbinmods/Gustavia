@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using UnityEngine;
 using static Gustavia.CustomFunctions;
 using static Gustavia.Plugin;
 using static Gustavia.DescriptionFunctions;
-using static Gustavia.CharacterFunctions;
+// CharacterFunctions class removed; move methods to CustomFunctions if needed
 using System.Text;
 using TMPro;
 using Obeliskial_Essentials;

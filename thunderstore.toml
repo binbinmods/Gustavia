@@ -1,0 +1,32 @@
+[config]
+schemaVersion = "0.2.1"
+
+[package]
+namespace = "Binbin"
+name = "Gustavia"
+versionNumber = "0.3.1"
+description = "New Hero Mod for Gustavia, the Serenader. A new hero that specializes in Songs, Small Weapons, and Stanza"
+websiteUrl = "https://github.com/binbinmods/Gustavia"
+containsNsfwContent = false
+
+[package.dependencies]
+meds-Obeliskial_Essentials = "1.5.1"
+meds-Obeliskial_Content = "1.7.2"
+
+
+[build]
+icon = "./icon.png"
+readme = "./README.md"
+outdir = "./build"
+
+[[build.copy]]
+source = "./Gustavia"
+target = ""
+
+
+[publish]
+repository = "https://thunderstore.io"
+communities = [ "across-the-obelisk", ]
+[publish.categories]
+across-the-obelisk = [ "mods", ]
+

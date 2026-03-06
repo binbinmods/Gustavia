@@ -33,23 +33,26 @@ def zip_mods():
 
 
 if __name__ == "__main__":  
+    # Name of the mod Folder in your Project.
     mod_dir = "Gustavia"
-    # config_dir = f"{mod_dir}Configs"    
-    content_destination_dir = mod_dir
-    print(content_destination_dir)
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    print(script_dir)
     
-    # Copy to Local Game
+    # Name of the "content" folder that is loaded by Obeliskial Content
+    # I typically have this as the same as the mod_dir, but feel free to change them
+    content_destination_dir = mod_dir
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    ## Copy to Local Game
+
+    # source is the path to where you have your Obeliskial_importing files.
     source = f"{script_dir}/{mod_dir}/BepInEx/config/Obeliskial_importing/{mod_dir}"
-    print(source)
+
+    # bepinex_dir is the path to where you have your BepInEx folder. 
+    # This is to load the Obeliskial_importing files locally
     bepinex_dir = os.path.abspath(os.path.join(script_dir, '..', '..', '..'))
-    destination = f"{bepinex_dir}/config/Obeliskial_importing/{content_destination_dir}"
-    print(destination)
+    destination = f"{bepinex_dir}/config/Obeliskial_importing/{content_destination_dir}"    
+
     copy_directory(source, destination)
-
-    # # Copy to Local Mod folder to zip
-    # mod_destination = f"{script_dir}/{mod_dir}/BepInEx/config/Obeliskial_importing/{content_destination_dir}"
-    # copy_directory(source, mod_destination)
-
+    
+    ## Zips the mods to a local folder to upload to Thunderstore. 
+    # Recommended to comment out
     zip_mods()
